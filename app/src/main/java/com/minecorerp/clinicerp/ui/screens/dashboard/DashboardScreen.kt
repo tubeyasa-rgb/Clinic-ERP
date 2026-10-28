@@ -96,7 +96,7 @@ fun DashboardScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("مسار المرضى المحتملين", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        Text("متابعة الحالات", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Switch(
                                 checked = viewModel.isMyLeadsOnly,
@@ -428,16 +428,16 @@ fun KpiStrip(leads: List<CrmLead>, eventsCount: Int) {
         val rev = leads.sumOf { it.expectedRevenue.asOdooDouble() ?: 0.0 }
         KpiCard("إجمالي الحالات", leads.size.toString())
         KpiCard("المواعيد المحملة", eventsCount.toString(), isWarning = eventsCount > 0)
-        KpiCard("الإيراد المتوقع", "${rev.toInt()}")
+        KpiCard("قيمة الفرص المتوقعة", "${rev.toInt()}")
         KpiCard("حالات هامة", leads.count { (it.priority.asOdooString() ?: "0") >= "2" }.toString())
     }
 }
 
 @Composable
 fun KpiCard(label: String, value: String, isWarning: Boolean = false) {
-    Card(modifier = Modifier.width(150.dp), shape = RoundedCornerShape(14.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), border = BorderStroke(1.dp, Border)) {
+    Card(modifier = Modifier.width(142.dp), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), border = BorderStroke(1.dp, Border)) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = value, fontSize = 20.sp, fontWeight = FontWeight.Black, color = if (isWarning) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary)
+            Text(text = value, fontSize = 26.sp, fontWeight = FontWeight.Bold, color = if (isWarning) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary)
             Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
@@ -459,7 +459,7 @@ fun KanbanBoard(stages: List<CrmStage>, leads: List<CrmLead>, availableTags: Lis
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun KanbanColumn(stage: CrmStage, leads: List<CrmLead>, availableTags: List<CrmTag>, onLeadClick: (CrmLead) -> Unit) {
-    Column(modifier = Modifier.width(280.dp).fillMaxHeight().background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), RoundedCornerShape(14.dp)).padding(10.dp)) {
+    Column(modifier = Modifier.width(280.dp).fillMaxHeight().background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), RoundedCornerShape(20.dp)).padding(10.dp)) {
         Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text(stage.name, fontSize = 13.5.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             val rev = leads.sumOf { it.expectedRevenue.asOdooDouble() ?: 0.0 }

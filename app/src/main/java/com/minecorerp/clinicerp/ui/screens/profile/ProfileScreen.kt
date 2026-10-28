@@ -125,6 +125,14 @@ fun ProfileScreen(
                     else OutlinedButton(onClick = { if (android.os.Build.VERSION.SDK_INT >= 33) notificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS) }) { Text("السماح بالإشعارات") }
                 }
             }
+            OutlinedCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("عن مساحة العمل", fontWeight = FontWeight.Bold)
+                    Text("Clinic ERP • إصدار تجريبي 1.1", style = MaterialTheme.typography.bodyMedium)
+                    Text("السيرفر: " + (runCatching { java.net.URI(viewModel.baseUrl).host }.getOrNull() ?: "غير متاح"), style = MaterialTheme.typography.bodySmall)
+                    Text("البيانات والصلاحيات يحددها سيرفر العيادة. لا توجد مزامنة دون اتصال أو ملفات علاجية متكاملة في هذه النسخة.", style = MaterialTheme.typography.bodySmall)
+                }
+            }
             var showPasswordFields by remember { mutableStateOf(false) }
             TextButton(onClick = { showPasswordFields = !showPasswordFields }) {
                 Text(if (showPasswordFields) "إلغاء تغيير كلمة المرور" else "تغيير كلمة المرور", color = MaterialTheme.colorScheme.primary)

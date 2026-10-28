@@ -18,7 +18,8 @@ fun ClinicTextField(
     placeholder: String = "",
     isError: Boolean = false,
     visualTransformation: androidx.compose.ui.text.input.VisualTransformation = androidx.compose.ui.text.input.VisualTransformation.None,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    keyboardType: androidx.compose.ui.text.input.KeyboardType = androidx.compose.ui.text.input.KeyboardType.Text
 ) {
     Column(modifier = modifier) {
         Text(
@@ -33,7 +34,7 @@ fun ClinicTextField(
             onValueChange = onValueChange,
             placeholder = { Text(placeholder, fontSize = 14.sp) },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(9.dp),
+            shape = RoundedCornerShape(14.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -42,6 +43,7 @@ fun ClinicTextField(
             ),
             isError = isError,
             visualTransformation = visualTransformation,
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = keyboardType),
             singleLine = true
         )
     }
@@ -57,9 +59,9 @@ fun ClinicButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().heightIn(min = 54.dp),
         enabled = enabled,
-        shape = RoundedCornerShape(9.dp),
+        shape = RoundedCornerShape(14.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (containerColor == Color.Unspecified) MaterialTheme.colorScheme.primary else containerColor,
             contentColor = MaterialTheme.colorScheme.onPrimary

@@ -27,6 +27,7 @@ import com.minecorerp.clinicerp.ui.screens.dashboard.DashboardViewModel
 import com.minecorerp.clinicerp.ui.screens.login.LoginScreen
 import com.minecorerp.clinicerp.ui.screens.profile.ProfileScreen
 import com.minecorerp.clinicerp.ui.theme.*
+import com.minecorerp.clinicerp.ui.components.ClinicLogo
 
 sealed class Screen(val route: String, val title: String = "", val icon: @Composable () -> Unit = {}) {
     object Login : Screen("login")
@@ -34,8 +35,8 @@ sealed class Screen(val route: String, val title: String = "", val icon: @Compos
     object Profile : Screen("profile")
     
     // Bottom Tab Screens
-    object Dashboard : Screen("dashboard", "CRM", { Icon(Icons.Default.Home, contentDescription = null) })
-    object Calendar : Screen("calendar", "الجلسات", { Icon(Icons.Default.DateRange, contentDescription = null) })
+    object Dashboard : Screen("dashboard", "المتابعة", { Icon(Icons.Default.Home, contentDescription = null) })
+    object Calendar : Screen("calendar", "المواعيد", { Icon(Icons.Default.DateRange, contentDescription = null) })
     object Contacts : Screen("contacts", "جهات الاتصال", { Icon(Icons.Default.Group, contentDescription = null) })
 }
 
@@ -48,6 +49,7 @@ fun ClinicErpNavGraph() {
         composable(Screen.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
+                    viewModel.statusMessage = null
                     viewModel.loadData()
                     rootNavController.navigate(Screen.Main.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
@@ -96,28 +98,28 @@ fun MainScaffold(
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(modifier = Modifier.size(9.dp).background(Accent, CircleShape))
+                        ClinicLogo(Modifier.size(34.dp))
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = currentScreen.title,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Black,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.loadData() }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "تحديث", tint = Color.White)
+                        Icon(Icons.Default.Refresh, contentDescription = "تحديث", tint = MaterialTheme.colorScheme.onSurface)
                     }
                     IconButton(onClick = onNavigateToProfile) {
-                        Icon(Icons.Default.AccountCircle, contentDescription = "الملف الشخصي", tint = Color.White)
+                        Icon(Icons.Default.AccountCircle, contentDescription = "الملف الشخصي", tint = MaterialTheme.colorScheme.onSurface)
                     }
                     IconButton(onClick = { viewModel.logout(onLogout) }, enabled = !viewModel.isSaving) {
-                        Icon(Icons.Default.Logout, "تسجيل الخروج", tint = Color.White)
+                        Icon(Icons.Default.Logout, "تسجيل الخروج", tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         bottomBar = {
@@ -147,6 +149,26 @@ fun MainScaffold(
         }
     ) { innerPadding ->
         Column(Modifier.padding(innerPadding)) {
+            Surface(color = MaterialTheme.colorScheme.surface) {
+                Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("مساحة عمل العيادة", style = MaterialTheme.typography.labelMedium)
+                    Text(when {
+                        viewModel.isLoading -> "جارٍ تحديث البيانات…"
+                        viewModel.error != null -> "التحديث غير مكتمل"
+                        viewModel.lastRefreshAt != null -> "آخر تحديث ${viewModel.lastRefreshAt!!.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))}"
+                        else -> "لم يكتمل تحديث البيانات بعد"
+                    }, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            viewModel.statusMessage?.let { message ->
+                Surface(color = MaterialTheme.colorScheme.primaryContainer) {
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CheckCircle, null, tint = MaterialTheme.colorScheme.primary)
+                        Text(message, Modifier.weight(1f).padding(8.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        IconButton(onClick = { viewModel.statusMessage = null }) { Icon(Icons.Default.Close, "إغلاق التأكيد") }
+                    }
+                }
+            }
             viewModel.error?.let { message ->
                 Surface(color = MaterialTheme.colorScheme.errorContainer) {
                     Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {

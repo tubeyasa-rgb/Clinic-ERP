@@ -1,16 +1,19 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.ClinicErp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+<resources>
+    <style name="Theme.ClinicErp" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_sage</item>
+        <item name="colorOnPrimary">@color/brand_ink</item>
+        <item name="colorPrimaryContainer">@color/brand_dark_background</item>
+        <item name="colorSecondary">@color/brand_sage</item>
+        <item name="colorOnSecondary">@color/brand_ink</item>
+        <item name="colorSecondaryContainer">@color/brand_dark_background</item>
+        <item name="colorTertiary">@color/brand_sage</item>
+        <item name="colorSurface">@color/brand_dark_background</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorError">@color/brand_error</item>
+        <item name="android:colorBackground">@color/brand_dark_background</item>
+        <item name="android:windowBackground">@color/brand_dark_background</item>
+        <item name="android:statusBarColor">@color/brand_dark_background</item>
+        <item name="android:navigationBarColor">@color/brand_dark_background</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

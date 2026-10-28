@@ -1,159 +1,59 @@
 package com.minecorerp.clinicerp.ui.screens.login
 
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.minecorerp.clinicerp.ui.components.ClinicButton
-import com.minecorerp.clinicerp.ui.components.ClinicTextField
+import com.minecorerp.clinicerp.ui.components.*
 
 @Composable
-fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    viewModel: LoginViewModel = hiltViewModel()
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .imePadding().verticalScroll(rememberScrollState()).padding(24.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Card(
-            modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth().wrapContentHeight(),
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Pulse Line Drawing
-                PulseLine(modifier = Modifier.fillMaxWidth().height(34.dp).padding(bottom = 18.dp))
-
-                Text(
-                    text = buildAnnotatedString {
-                        append("Clinic ")
-                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.tertiary)) {
-                            append("Erp")
-                        }
-                    },
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Black,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                
-                Text(
-                    text = "CRM مخصص لإدارة عملاء العيادة، متصل مباشرة بقاعدة بيانات أودو",
-                    fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 4.dp, bottom = 26.dp)
-                )
-
-                ClinicTextField(
-                    value = viewModel.url,
-                    onValueChange = { viewModel.url = it },
-                    label = "رابط السيرفر (URL)",
-                    placeholder = "https://yourclinic.odoo.com"
-                )
-                
-                Spacer(modifier = Modifier.height(14.dp))
-                
-                ClinicTextField(
-                    value = viewModel.database,
-                    onValueChange = { viewModel.database = it },
-                    label = "قاعدة البيانات (اختياري لو السيرفر فيه قاعدة واحدة)"
-                )
-                Spacer(Modifier.height(14.dp))
-                ClinicTextField(
-                    value = viewModel.username,
-                    onValueChange = { viewModel.username = it },
-                    label = "اسم المستخدم",
-                    placeholder = "admin أو البريد الإلكتروني"
-                )
-                
-                Spacer(modifier = Modifier.height(14.dp))
-                
-                ClinicTextField(
-                    value = viewModel.password,
-                    onValueChange = { viewModel.password = it },
-                    label = "كلمة المرور",
-                    placeholder = "••••••••",
-                    visualTransformation = PasswordVisualTransformation()
-                )
-
-                if (viewModel.error != null) {
-                    Text(
-                        text = viewModel.error!!,
-                        color = MaterialTheme.colorScheme.error,
-                        fontSize = 13.sp,
-                        modifier = Modifier
-                            .padding(top = 14.dp)
-                            .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
-                            .padding(10.dp)
-                            .fillMaxWidth()
-                    )
+fun LoginScreen(onLoginSuccess: () -> Unit, viewModel: LoginViewModel = hiltViewModel()) {
+    var showServerDetails by rememberSaveable { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) }
+    Column(Modifier.fillMaxSize().systemBarsPadding().imePadding().verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        Column(Modifier.widthIn(max = 480.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                ClinicLogo(Modifier.size(72.dp))
+                Column {
+                    Text("Clinic ERP", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    Text("مساحة أهدأ لإدارة عيادتك", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-
-                Spacer(modifier = Modifier.height(22.dp))
-
-                ClinicButton(
-                    text = if (viewModel.isLoading) "جاري الاتصال..." else "تسجيل الدخول",
-                    onClick = { viewModel.onLoginClick(onLoginSuccess) },
-                    enabled = !viewModel.isLoading
-                )
+            }
+            Text("أهلًا بعودتك", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
+            Text("مواعيدك، جهات الاتصال، ومتابعة الحالات في مكان واحد.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            OutlinedCard(shape = RoundedCornerShape(24.dp), colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+                Column(Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
+                    Text("تسجيل الدخول", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    ClinicTextField(viewModel.url, { viewModel.url = it }, "رابط سيرفر العيادة", "https://clinic.example.com", keyboardType = KeyboardType.Uri)
+                    ClinicTextField(viewModel.username, { viewModel.username = it }, "اسم المستخدم أو البريد", keyboardType = KeyboardType.Email)
+                    OutlinedTextField(value = viewModel.password, onValueChange = { viewModel.password = it }, label = { Text("كلمة المرور") }, singleLine = true, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp), visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(), keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Password), trailingIcon = {
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) { Icon(if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility, if (passwordVisible) "إخفاء كلمة المرور" else "إظهار كلمة المرور") }
+                    })
+                    TextButton(onClick = { showServerDetails = !showServerDetails }) { Text(if (showServerDetails) "إخفاء إعدادات قاعدة البيانات" else "تحديد قاعدة البيانات (اختياري)") }
+                    if (showServerDetails || viewModel.database.isNotBlank()) ClinicTextField(viewModel.database, { viewModel.database = it }, "اسم قاعدة البيانات", "اطلب الاسم من مسؤول النظام")
+                    viewModel.error?.let { message ->
+                        Surface(color = MaterialTheme.colorScheme.errorContainer, shape = RoundedCornerShape(12.dp)) { Text(message, Modifier.padding(14.dp), color = MaterialTheme.colorScheme.onErrorContainer) }
+                    }
+                    ClinicButton(if (viewModel.isLoading) "جارٍ تسجيل الدخول…" else "الدخول إلى العيادة", { viewModel.onLoginClick(onLoginSuccess) }, enabled = !viewModel.isLoading)
+                    if (viewModel.isLoading) LinearProgressIndicator(Modifier.fillMaxWidth())
+                    Text("استخدم بيانات حساب العيادة. التطبيق يتطلب اتصالًا بالإنترنت.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.primary)
+                Text("نسخة تجريبية • اختبرها ببيانات غير حقيقية قبل استخدامها في العمل", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-    }
-}
-
-@Composable
-fun PulseLine(modifier: Modifier = Modifier) {
-    val pulseColor = MaterialTheme.colorScheme.secondary
-    Canvas(modifier = modifier) {
-        val width = size.width
-        val height = size.height
-        val centerY = height / 2
-        
-        val path = Path().apply {
-            moveTo(0f, centerY)
-            lineTo(width * 0.35f, centerY)
-            lineTo(width * 0.40f, centerY - 15.dp.toPx())
-            lineTo(width * 0.45f, centerY + 15.dp.toPx())
-            lineTo(width * 0.50f, centerY)
-            lineTo(width, centerY)
-        }
-        
-        drawPath(
-            path = path,
-            color = pulseColor,
-            style = Stroke(
-                width = 2.5.dp.toPx(),
-                cap = StrokeCap.Round,
-                join = StrokeJoin.Round
-            )
-        )
     }
 }

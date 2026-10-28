@@ -51,6 +51,9 @@ class DashboardViewModel @Inject constructor(
     var canWriteContacts by mutableStateOf(false)
     
     var isLoading by mutableStateOf(false)
+    var lastRefreshAt by mutableStateOf<java.time.LocalTime?>(null)
+        private set
+    var statusMessage by mutableStateOf<String?>(null)
     var error by mutableStateOf<String?>(null)
 
     // Specific record details
@@ -69,7 +72,7 @@ class DashboardViewModel @Inject constructor(
         isSaving = true
         error = null
         viewModelScope.launch {
-            try { action() }
+            try { action(); if (error == null) statusMessage = "تم تنفيذ العملية بنجاح" }
             catch (e: CancellationException) { throw e } catch (e: Exception) { error = e.message ?: "تعذر تنفيذ العملية" }
             finally { isSaving = false }
         }
@@ -115,6 +118,7 @@ class DashboardViewModel @Inject constructor(
                 val perms = permsTask.await()
                 canCreateContacts = perms["create"] == true
                 canWriteContacts = perms["write"] == true
+                lastRefreshAt = if (error == null) java.time.LocalTime.now() else null
 
             } catch (e: CancellationException) { throw e } catch (e: Exception) {
                 error = "خطأ في الاتصال: ${e.message}"
@@ -148,7 +152,8 @@ class DashboardViewModel @Inject constructor(
             if (result.isSuccess) {
                 onSuccess()
             } else {
-                onError(result.exceptionOrNull()?.message ?: "فشل تغيير كلمة المرور")
+                error = result.exceptionOrNull()?.message ?: "فشل تغيير كلمة المرور"
+                onError(error!!)
             }
         }
     }
@@ -309,7 +314,7 @@ class DashboardViewModel @Inject constructor(
             utmSources = emptyList(); utmMediums = emptyList(); utmCampaigns = emptyList()
             availableActivityTypes = emptyList(); leadActivities = emptyList()
             selectedTeamId = null; isMyLeadsOnly = true; canCreateContacts = false; canWriteContacts = false
-            error = null; baseUrl = ""
+            error = null; statusMessage = null; lastRefreshAt = null; baseUrl = ""
             leads = emptyList(); calendarEvents = emptyList(); availableContacts = emptyList()
             upcomingActivities = emptyList(); currentUserProfile = null; stages = emptyList()
             onSuccess()
