@@ -48,13 +48,13 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("الملف الشخصي", color = Color.White, fontWeight = FontWeight.Bold) },
+                title = { Text("الحساب", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع", tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         containerColor = MaterialTheme.colorScheme.background
@@ -67,16 +67,6 @@ fun ProfileScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Surface(
-                modifier = Modifier.size(100.dp),
-                shape = RoundedCornerShape(20.dp),
-                color = MaterialTheme.colorScheme.primary
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(48.dp))
-                }
-            }
-            
             viewModel.error?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(vertical = 12.dp)) }
             Spacer(Modifier.height(32.dp))
             com.minecorerp.clinicerp.ui.components.ClinicTextField(
@@ -95,7 +85,7 @@ fun ProfileScreen(
                 placeholder = "name@example.com"
             )
             
-            Spacer(Modifier.height(48.dp))
+            Spacer(Modifier.height(24.dp))
             
             Button(
                 onClick = {
@@ -104,7 +94,7 @@ fun ProfileScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 enabled = !isSaving
             ) {
@@ -117,7 +107,7 @@ fun ProfileScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            OutlinedCard(Modifier.fillMaxWidth()) {
+            Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.background) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("تنبيهات المتابعة", fontWeight = FontWeight.Bold)
                     Text("فحص دوري للأنشطة المستحقة والمتأخرة عند توفر الإنترنت", style = MaterialTheme.typography.bodySmall)
@@ -125,10 +115,10 @@ fun ProfileScreen(
                     else OutlinedButton(onClick = { if (android.os.Build.VERSION.SDK_INT >= 33) notificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS) }) { Text("السماح بالإشعارات") }
                 }
             }
-            OutlinedCard(Modifier.fillMaxWidth()) {
+            Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.background) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("عن مساحة العمل", fontWeight = FontWeight.Bold)
-                    Text("Clinic ERP • إصدار تجريبي 1.1", style = MaterialTheme.typography.bodyMedium)
+                    Text("Clinic ERP • إصدار تجريبي 1.2", style = MaterialTheme.typography.bodyMedium)
                     Text("السيرفر: " + (runCatching { java.net.URI(viewModel.baseUrl).host }.getOrNull() ?: "غير متاح"), style = MaterialTheme.typography.bodySmall)
                     Text("البيانات والصلاحيات يحددها سيرفر العيادة. لا توجد مزامنة دون اتصال أو ملفات علاجية متكاملة في هذه النسخة.", style = MaterialTheme.typography.bodySmall)
                 }
@@ -199,7 +189,7 @@ fun ProfileScreen(
                                 })
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = Teal900),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                             enabled = !isSaving
                         ) {
                             Text("تحديث كلمة المرور", color = Color.White)

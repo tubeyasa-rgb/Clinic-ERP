@@ -52,10 +52,9 @@ fun CalendarScreen(viewModel: DashboardViewModel) {
         })
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            ElevatedCard(Modifier.fillMaxWidth().padding(16.dp), shape = RoundedCornerShape(20.dp)) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("جدول المواعيد", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                    Text("مواعيدك كمنظّم أو مشارك • بتوقيت جهازك", style = MaterialTheme.typography.bodySmall)
+            Column(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(horizontal = 20.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("التوقيت المحلي لجهازك", style = MaterialTheme.typography.bodySmall)
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         TextButton(onClick = { selectedDate = day.minusDays(1).toString(); showAll = false }) { Text("السابق") }
                         OutlinedButton(onClick = { showDatePicker = true }) { Icon(Icons.Default.DateRange, null); Spacer(Modifier.width(6.dp)); Text(selectedDate) }
@@ -76,11 +75,11 @@ fun CalendarScreen(viewModel: DashboardViewModel) {
                     OutlinedButton(onClick = { showDialog = true }) { Text("حجز موعد جديد") }
                 }
             }
-            LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 100.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 100.dp), verticalArrangement = Arrangement.spacedBy(0.dp)) {
                 items(events, key = { it.id }) { event -> CalendarEventCard(event) }
             }
         }
-        ExtendedFloatingActionButton(onClick = { showDialog = true }, modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp), icon = { Icon(Icons.Default.Add, null) }, text = { Text("موعد جديد") })
+        ExtendedFloatingActionButton(elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp), onClick = { showDialog = true }, modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp), icon = { Icon(Icons.Default.Add, null) }, text = { Text("موعد جديد") })
     }
 }
 
@@ -91,18 +90,15 @@ private fun localEventStart(event: CalendarEvent): LocalDateTime =
 @Composable
 fun CalendarEventCard(event: CalendarEvent) {
     val local = runCatching { localEventStart(event) }.getOrNull()
-    ElevatedCard(Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
-        Row(Modifier.padding(18.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(12.dp)) {
-                Text(if (event.allday) "طوال\nاليوم" else local?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "—", Modifier.padding(14.dp), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            }
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(event.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text(local?.toLocalDate()?.toString() ?: event.start, style = MaterialTheme.typography.bodySmall)
-                event.description?.takeIf { it.isNotBlank() }?.let { Text(android.text.Html.fromHtml(it, android.text.Html.FROM_HTML_MODE_LEGACY).toString(), style = MaterialTheme.typography.bodyMedium) }
-            }
+    Row(Modifier.fillMaxWidth().padding(vertical = 20.dp), horizontalArrangement = Arrangement.spacedBy(24.dp), verticalAlignment = Alignment.Top) {
+        Text(if (event.allday) "طوال اليوم" else local?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "—", Modifier.width(72.dp), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium)
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(event.name, style = MaterialTheme.typography.titleMedium)
+            Text(local?.toLocalDate()?.toString() ?: event.start, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            event.description?.takeIf { it.isNotBlank() }?.let { Text(android.text.Html.fromHtml(it, android.text.Html.FROM_HTML_MODE_LEGACY).toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 }
 
 @Composable

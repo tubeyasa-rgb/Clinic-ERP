@@ -34,12 +34,12 @@ fun ClinicTextField(
             onValueChange = onValueChange,
             placeholder = { Text(placeholder, fontSize = 14.sp) },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant
             ),
             isError = isError,
             visualTransformation = visualTransformation,
@@ -61,7 +61,7 @@ fun ClinicButton(
         onClick = onClick,
         modifier = modifier.fillMaxWidth().heightIn(min = 54.dp),
         enabled = enabled,
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = if (containerColor == Color.Unspecified) MaterialTheme.colorScheme.primary else containerColor,
             contentColor = MaterialTheme.colorScheme.onPrimary

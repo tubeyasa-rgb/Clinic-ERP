@@ -91,6 +91,7 @@ fun MainScaffold(
     val currentDestination = navBackStackEntry?.destination
     
     val items = listOf(Screen.Dashboard, Screen.Calendar, Screen.Contacts)
+    var showMenu by remember { mutableStateOf(false) }
     val currentScreen = items.find { it.route == currentDestination?.route } ?: Screen.Dashboard
 
     Scaffold(
@@ -98,12 +99,10 @@ fun MainScaffold(
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        ClinicLogo(Modifier.size(34.dp))
-                        Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = currentScreen.title,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Black,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -112,18 +111,19 @@ fun MainScaffold(
                     IconButton(onClick = { viewModel.loadData() }) {
                         Icon(Icons.Default.Refresh, contentDescription = "تحديث", tint = MaterialTheme.colorScheme.onSurface)
                     }
-                    IconButton(onClick = onNavigateToProfile) {
-                        Icon(Icons.Default.AccountCircle, contentDescription = "الملف الشخصي", tint = MaterialTheme.colorScheme.onSurface)
-                    }
-                    IconButton(onClick = { viewModel.logout(onLogout) }, enabled = !viewModel.isSaving) {
-                        Icon(Icons.Default.Logout, "تسجيل الخروج", tint = MaterialTheme.colorScheme.onSurface)
+                    Box {
+                        IconButton(onClick = { showMenu = true }) { Icon(Icons.Default.MoreVert, "المزيد") }
+                        DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+                            DropdownMenuItem(text = { Text("الحساب والإعدادات") }, onClick = { showMenu = false; onNavigateToProfile() })
+                            DropdownMenuItem(text = { Text("تسجيل الخروج") }, enabled = !viewModel.isSaving, onClick = { showMenu = false; viewModel.logout(onLogout) })
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.primary) {
+            NavigationBar(tonalElevation = 0.dp, containerColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.primary) {
                 items.forEach { screen ->
                     NavigationBarItem(
                         icon = screen.icon,
@@ -141,7 +141,7 @@ fun MainScaffold(
                             selectedTextColor = MaterialTheme.colorScheme.primary,
                             unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                            indicatorColor = Color.Transparent
                         )
                     )
                 }
@@ -151,7 +151,6 @@ fun MainScaffold(
         Column(Modifier.padding(innerPadding)) {
             Surface(color = MaterialTheme.colorScheme.surface) {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("مساحة عمل العيادة", style = MaterialTheme.typography.labelMedium)
                     Text(when {
                         viewModel.isLoading -> "جارٍ تحديث البيانات…"
                         viewModel.error != null -> "التحديث غير مكتمل"

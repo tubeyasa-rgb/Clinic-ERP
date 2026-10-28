@@ -37,9 +37,24 @@ fun DashboardScreen(
     viewModel: DashboardViewModel
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    var showActivities by remember { mutableStateOf(false) }
     var showNewLeadDialog by remember { mutableStateOf(false) }
     var selectedLead by remember { mutableStateOf<CrmLead?>(null) }
 
+    if (showActivities) {
+        AlertDialog(onDismissRequest = { showActivities = false }, title = { Text("أنشطة المتابعة") }, confirmButton = { TextButton(onClick = { showActivities = false }) { Text("إغلاق") } }, text = {
+            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 360.dp)) {
+                items(viewModel.upcomingActivities, key = { it.id }) { activity ->
+                    Column(Modifier.fillMaxWidth().padding(vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(activity.resName ?: "نشاط", fontWeight = FontWeight.Medium)
+                        Text(activity.summary ?: activity.note ?: "متابعة", style = MaterialTheme.typography.bodySmall)
+                        Text(activity.dateDeadline, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                }
+            }
+        })
+    }
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         if (showNewLeadDialog) {
             NewLeadDialog(
@@ -86,17 +101,16 @@ fun DashboardScreen(
                     }, eventsCount = viewModel.calendarEvents.size)
 
             if (viewModel.upcomingActivities.isNotEmpty()) {
-                ActivityStrip(activities = viewModel.upcomingActivities)
+                TextButton(onClick = { showActivities = true }, modifier = Modifier.padding(horizontal = 12.dp)) { Text("أنشطة المتابعة (${viewModel.upcomingActivities.size})") }
             }
             
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp, vertical = 18.dp)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("متابعة الحالات", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Switch(
                                 checked = viewModel.isMyLeadsOnly,
@@ -112,7 +126,7 @@ fun DashboardScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = Accent),
                         shape = RoundedCornerShape(9.dp)
                     ) {
-                        Text("+ حالة جديدة", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text("إضافة حالة", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
                 
@@ -127,7 +141,7 @@ fun DashboardScreen(
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
                     ) {
                         val teamName = viewModel.availableTeams.find { it.id == viewModel.selectedTeamId }?.name ?: "كل فرق المتابعة"
-                        Text("📍 $teamName", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+                        Text(teamName, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
                         Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                     }
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
@@ -144,7 +158,7 @@ fun DashboardScreen(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 placeholder = { Text("ابحث بالاسم أو الهاتف أو البريد") },
                 leadingIcon = { Icon(Icons.Default.Search, null) },
-                singleLine = true, shape = RoundedCornerShape(16.dp)
+                singleLine = true, shape = RoundedCornerShape(8.dp)
             )
             if (viewModel.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -166,7 +180,7 @@ fun DashboardScreen(
         if (viewModel.isUploadingAttachment) {
             Surface(modifier = Modifier.fillMaxSize(), color = Color.Black.copy(0.5f)) {
                 Box(contentAlignment = Alignment.Center) {
-                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), shape = RoundedCornerShape(16.dp)) {
+                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), shape = RoundedCornerShape(8.dp)) {
                         Column(modifier = Modifier.padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator(color = Teal700)
                             Spacer(Modifier.height(16.dp))
@@ -424,35 +438,42 @@ fun ActivityStrip(activities: List<MailActivity>) {
 
 @Composable
 fun KpiStrip(leads: List<CrmLead>, eventsCount: Int) {
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp, vertical = 20.dp).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-        val rev = leads.sumOf { it.expectedRevenue.asOdooDouble() ?: 0.0 }
-        KpiCard("إجمالي الحالات", leads.size.toString())
-        KpiCard("المواعيد المحملة", eventsCount.toString(), isWarning = eventsCount > 0)
-        KpiCard("قيمة الفرص المتوقعة", "${rev.toInt()}")
-        KpiCard("حالات هامة", leads.count { (it.priority.asOdooString() ?: "0") >= "2" }.toString())
+    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+        KpiCard("حالة", leads.size.toString())
+        KpiCard("موعد محمّل", eventsCount.toString())
+        KpiCard("مهمة", leads.count { (it.priority.asOdooString() ?: "0") >= "2" }.toString())
+        KpiCard("قيمة الفرص", leads.sumOf { it.expectedRevenue.asOdooDouble() ?: 0.0 }.toInt().toString())
     }
 }
 
 @Composable
 fun KpiCard(label: String, value: String, isWarning: Boolean = false) {
-    Card(modifier = Modifier.width(142.dp), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), border = BorderStroke(1.dp, Border)) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = value, fontSize = 26.sp, fontWeight = FontWeight.Bold, color = if (isWarning) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary)
-            Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
 @Composable
 fun KanbanBoard(stages: List<CrmStage>, leads: List<CrmLead>, availableTags: List<CrmTag>, onLeadClick: (CrmLead) -> Unit) {
-    if (stages.isEmpty()) {
-        Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
-            Text("مراحل المتابعة غير متاحة. تأكد من تفعيل CRM والصلاحيات ثم حدّث البيانات.")
+    var selectedStage by remember { mutableStateOf<Int?>(null) }
+    val visible = leads.filter { selectedStage == null || it.stageId.asOdooId() == selectedStage }
+    Column(Modifier.fillMaxSize()) {
+        LazyRow(contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            item { FilterChip(leadingIcon = if (selectedStage == null) { { Icon(Icons.Default.Check, null, Modifier.size(16.dp)) } } else null, selected = selectedStage == null, onClick = { selectedStage = null }, label = { Text("الكل") }) }
+            items(stages, key = { it.id }) { stage ->
+                FilterChip(leadingIcon = if (selectedStage == stage.id) { { Icon(Icons.Default.Check, null, Modifier.size(16.dp)) } } else null, selected = selectedStage == stage.id, onClick = { selectedStage = stage.id }, label = { Text(stage.name) })
+            }
         }
-        return
-    }
-    LazyRow(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(horizontal = 26.dp, vertical = 14.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        items(stages) { stage -> KanbanColumn(stage = stage, leads = leads.filter { it.stageId.asOdooId() == stage.id }, availableTags = availableTags, onLeadClick = onLeadClick) }
+        if (visible.isEmpty()) {
+            Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
+                Text("لا توجد حالات في هذا العرض", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        } else LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 24.dp)) {
+            items(visible, key = { it.id }) { lead ->
+                LeadCard(lead, availableTags) { onLeadClick(lead) }
+            }
+        }
     }
 }
 
@@ -474,21 +495,15 @@ fun KanbanColumn(stage: CrmStage, leads: List<CrmLead>, availableTags: List<CrmT
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LeadCard(lead: CrmLead, availableTags: List<CrmTag>, onClick: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth().clickable { onClick() }, shape = RoundedCornerShape(11.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(lead.contactName.asOdooString() ?: lead.name, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
-                lead.expectedRevenue.asOdooDouble()?.let { Text("${it.toInt()}", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) }
-            }
-            lead.userId.asOdooName()?.let { Text("👤 $it", fontSize = 11.sp, color = MaterialTheme.colorScheme.secondary, modifier = Modifier.padding(top = 4.dp)) }
-            FlowRow(modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                lead.tagIds?.forEach { tagId ->
-                    val tagName = availableTags.find { it.id == tagId }?.name ?: "تصنيف"
-                    Surface(color = MaterialTheme.colorScheme.secondaryContainer, shape = RoundedCornerShape(4.dp)) { Text(tagName, color = MaterialTheme.colorScheme.onSecondaryContainer, fontSize = 9.sp, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)) }
-                }
-            }
-            val p = lead.priority.asOdooString() ?: "0"
-            if (p >= "1") Row(modifier = Modifier.padding(top = 6.dp)) { repeat(p.toIntOrNull() ?: 0) { Icon(Icons.Default.Star, null, tint = Gold, modifier = Modifier.size(14.dp)) } }
+    Column(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(lead.contactName.asOdooString() ?: lead.name, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium)
+            lead.expectedRevenue.asOdooDouble()?.let { Text(it.toInt().toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
+        lead.userId.asOdooName()?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        val tags = lead.tagIds.orEmpty().mapNotNull { id -> availableTags.find { it.id == id }?.name }
+        if (tags.isNotEmpty()) Text(tags.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if ((lead.priority.asOdooString()?.toIntOrNull() ?: 0) >= 2) Text("أولوية مرتفعة", style = MaterialTheme.typography.labelSmall)
     }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 }

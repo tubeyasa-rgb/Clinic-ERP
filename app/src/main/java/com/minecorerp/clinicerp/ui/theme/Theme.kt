@@ -1,6 +1,7 @@
 package com.minecorerp.clinicerp.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
@@ -27,25 +28,25 @@ private val LightColorScheme = lightColorScheme(
     surface = Surface,
     onSurface = OnSurface,
     surfaceVariant = SurfaceVariant,
-    surfaceDim = Color(0xFFDDE5D5),
-    surfaceBright = Color(0xFFFAFCF7),
+    surfaceDim = Color(0xFFE6E6E6),
+    surfaceBright = Color(0xFFFFFFFF),
     surfaceContainerLowest = Color.White,
-    surfaceContainerLow = Color(0xFFF4F7EE),
-    surfaceContainer = Color(0xFFEEF3E7),
-    surfaceContainerHigh = Color(0xFFE7EEDD),
-    surfaceContainerHighest = Color(0xFFDFE8D4),
+    surfaceContainerLow = Color(0xFFFAFAFA),
+    surfaceContainer = Color(0xFFF6F6F6),
+    surfaceContainerHigh = Color(0xFFF1F1F1),
+    surfaceContainerHighest = Color(0xFFECECEC),
     primaryContainer = Teal100,
     onPrimaryContainer = Teal900,
     secondaryContainer = Mint,
     onSecondaryContainer = Teal900,
     tertiaryContainer = AccentLight,
-    onTertiaryContainer = Color(0xFF604611),
+    onTertiaryContainer = Color(0xFF303030),
     errorContainer = Color(0xFFFCE9E7),
     onErrorContainer = Color(0xFF7B2525),
     outline = Border,
     outlineVariant = Border,
     surfaceTint = Primary,
-    inversePrimary = Color(0xFFB3D39E),
+    inversePrimary = Color(0xFFE7E7E7),
     inverseSurface = DarkSurface,
     inverseOnSurface = DarkInk,
     onSurfaceVariant = OnSurfaceVariant
@@ -65,22 +66,22 @@ private val DarkColorScheme = darkColorScheme(
     surface = DarkSurfaceColor,
     onSurface = DarkOnSurface,
     surfaceVariant = DarkSurfaceVariant,
-    surfaceDim = Color(0xFF141D13),
-    surfaceBright = Color(0xFF35422E),
-    surfaceContainerLowest = Color(0xFF10180F),
-    surfaceContainerLow = Color(0xFF192417),
-    surfaceContainer = Color(0xFF1D291A),
-    surfaceContainerHigh = Color(0xFF273422),
-    surfaceContainerHighest = Color(0xFF31402A),
-    primaryContainer = Color(0xFF354E2B),
-    onPrimaryContainer = Color(0xFFDAEFCB),
+    surfaceDim = Color(0xFF121212),
+    surfaceBright = Color(0xFF333333),
+    surfaceContainerLowest = Color(0xFF0F0F0F),
+    surfaceContainerLow = Color(0xFF171717),
+    surfaceContainer = Color(0xFF191919),
+    surfaceContainerHigh = Color(0xFF222222),
+    surfaceContainerHighest = Color(0xFF292929),
+    primaryContainer = Color(0xFF343434),
+    onPrimaryContainer = Color(0xFFEFEFEF),
     secondaryContainer = DarkSurfaceVariant,
     onSecondaryContainer = DarkInk,
-    tertiaryContainer = Color(0xFF4C3B17),
-    onTertiaryContainer = Color(0xFFF7DFA9),
+    tertiaryContainer = Color(0xFF343434),
+    onTertiaryContainer = Color(0xFFEFEFEF),
     errorContainer = Color(0xFF5D2929),
     onErrorContainer = Color(0xFFFFDAD6),
-    outline = Color(0xFFA0B293),
+    outline = Color(0xFFA0A0A0),
     outlineVariant = DarkBorder,
     surfaceTint = DarkPrimary,
     inversePrimary = Primary,
@@ -113,6 +114,13 @@ fun ClinicErpTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = Shapes(
+            extraSmall = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),
+            small = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+            medium = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
+            large = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+            extraLarge = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+        ),
         content = content
     )
     }

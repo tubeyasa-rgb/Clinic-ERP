@@ -76,7 +76,7 @@ fun ContactsScreen(
                     modifier = Modifier.weight(1f),
                     placeholder = { Text("ابحث بالاسم أو الهاتف أو البريد") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
                         unfocusedBorderColor = MaterialTheme.colorScheme.outline,
@@ -105,8 +105,8 @@ fun ContactsScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 96.dp),
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
                     items(filteredContacts, key = { it.id }) { contact ->
                         ContactCard(
@@ -131,6 +131,7 @@ fun ContactsScreen(
 
         if (viewModel.canCreateContacts && !isSelectionMode) {
             FloatingActionButton(
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
                 onClick = { showAddDialog = true },
                 modifier = Modifier.align(Alignment.BottomEnd).padding(24.dp),
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -150,47 +151,15 @@ fun ContactCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick
-            ),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface
-        ),
-        border = BorderStroke(if (isSelected) 2.dp else 1.dp, if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(
-                modifier = Modifier.size(40.dp),
-                shape = RoundedCornerShape(8.dp),
-                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        if (isSelected) Icons.Default.Check else Icons.Default.Person,
-                        contentDescription = null,
-                        tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-            Spacer(Modifier.width(16.dp))
-            Column {
-                Text(contact.name, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                if (!contact.phone.isNullOrBlank()) {
-                    Text("📞 ${contact.phone}", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
-                } else if (!contact.email.isNullOrBlank()) {
-                    Text(contact.email, fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
-                }
-            }
+    Row(Modifier.fillMaxWidth().combinedClickable(onClick = onClick, onLongClick = onLongClick).padding(vertical = 18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Icon(if (isSelected) Icons.Default.Check else Icons.Default.PersonOutline, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(contact.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium)
+            val detail = contact.phone?.takeIf { it.isNotBlank() } ?: contact.email.orEmpty()
+            if (detail.isNotBlank()) Text(detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 }
 
 @Composable

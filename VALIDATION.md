@@ -24,3 +24,7 @@ The new interface uses sage/leaf green, warm white, and charcoal. The preliminar
 The literature/design review, source links, name evaluation and proposed physician usability study are in docs/physiotherapy-brand-research-ar.md. This is a desk review of official healthcare design guidance, not empirical research on local physicians or proof that one color increases trust. Text/button color pairs were checked mathematically; a full accessibility or device UI audit has not been performed.
 
 The UI shows update status and success feedback, progressively discloses database setup, provides a password visibility control, and documents the trial version's limitations. Live Odoo integration and device instrumentation remain unrun.
+
+## Minimal interface revision 1.2
+
+Supersedes the 1.1 sage interface. Uses neutral light/dark themes, flatter forms, text-based counters, vertical CRM rows with stage filters, contact rows and a plain appointment agenda. Account/logout remain accessible through the overflow menu. The existing gear/doctor logo is retained as a small login identity and launcher asset. No live-device or visual screenshot review has been performed; compilation, unit tests and lint are the automated checks.
